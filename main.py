@@ -34,17 +34,16 @@ def read_home():
 
 @app.get("/api")
 def read_csv(name: List[str] = Query(None)):
-    #Search The json
-    if name:
-        results = []
-        for query_name in name:
-            found_user = next((user for user in data if user.get("name") == query_name), None)
-            if found_user:
-                results.append({"name": query_name, "marks": found_user.get("marks", "Marks not available")})
-            else:
-                results.append({"name": query_name, "error": "User not found!"})
-        #print(results)
-        return {"marks": [results[0]['marks'], results[1]['marks']]}
+    if not name:
+        return {"error": "No names provided!"}
     
-    return {"error": "User not found!"}
+    marks_list = []
+    for query_name in name:
+        found_user = next((user for user in data if user.get("name") == query_name), None)
+        if found_user:
+            marks_list.append(found_user.get("marks", None))
+        else:
+            marks_list.append(None)  # or 0 or -1 or any placeholder
+    
+    return {"marks": marks_list}
     
